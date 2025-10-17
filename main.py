@@ -1,10 +1,12 @@
-from flask import Flask, request, Response
+from flask import Flask, jsonify, request, Response
 import json
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
+CORS(app)
 
 # --- Datos ---
 recommendations_dict = {
@@ -58,7 +60,7 @@ recommendations_dict = {
         "Fomenta al paciente a toser vigorosamente mientras lo apoyas desde atrás.",
         "Realiza la maniobra de Heimlich: colócate detrás, abraza la cintura, y aplica cinco golpes rápidos entre los omóplatos seguidos de cinco compresiones abdominales.",
         "Si el objeto obstructor es visible en la boca, intenta retirarlo con cuidado usando pinzas esterilizadas.",
-        "Llama al servicio de emergencias inmediatamente si el paciente pierde el conocimiento o no puede coughing."
+        "Llama al servicio de emergencias inmediatamente si el paciente pierde el conocimiento o no puede toser."
     ]
 }
 
@@ -96,7 +98,6 @@ def get_recommendation(user_vector):
 
 # --- Endpoint Flask ---
 @app.route("/recommend", methods=["POST"])
-@app.route("/recommend", methods=["POST"])
 def recommend_endpoint():
     data = request.json
     word = data.get("word", "").lower()
@@ -115,11 +116,6 @@ def recommend_endpoint():
         mimetype='application/json'
     )
 
-
 # --- Ejecutar servidor ---
-# if __name__ == "__main__":
-#     app.run(host="0.0.0.0", port=5000, debug=True)
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False)
-CORS(app) 
-# CORS(app, resources={r"/recommend": {"origins": "http://localhost:38517"}})
+    app.run(debug=True, port=os.getenv("PORT", default=5000))
